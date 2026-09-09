@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Management System</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="login" class="login-screen">
+  <div class="login-card">
+    <div class="logo">SM</div>
+    <h1>Student Management System</h1>
+    <p>Staff Portal</p>
+    <form id="loginForm">
+      <label>Username<input id="username" required></label>
+      <label>Password<input id="password" type="password" required></label>
+      <button class="btn primary" type="submit">Sign In</button>
+      <small>Demo frontend: any non-empty username and password.</small>
+    </form>
+  </div>
+</div>
+
+<div id="app" class="app hidden">
+<aside id="sidebar" class="sidebar">
+  <div class="brand"><div class="logo">SM</div><div><b>Student MS</b><small>Staff Portal</small></div></div>
+  <nav>
+    <button class="nav active" data-view="dashboard">⌂ Dashboard</button>
+    <button class="nav" data-view="students">◫ Students</button>
+    <button class="nav" data-view="add">＋ Add Student</button>
+    <button class="nav" data-view="reports">▤ Department Report</button>
+  </nav>
+  <div class="bottom-nav">
+    <button class="nav" id="theme">◐ Toggle Theme</button>
+    <button class="nav danger" id="logout">↪ Logout</button>
+  </div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+  <button id="menu" class="mobile">☰</button>
+  <div><small>Staff Workspace</small><h2 id="title">Dashboard</h2></div>
+  <span id="user" class="chip">Staff</span>
+</header>
+
+<section id="dashboard" class="view active-view">
+  <div class="head"><div><h3>Overview</h3><p>Manage student records and common staff tasks.</p></div>
+  <button class="btn primary" data-go="add">+ Add Student</button></div>
+  <div class="stats">
+    <div class="card"><span>Total Students</span><strong id="total">0</strong></div>
+    <div class="card"><span>Departments</span><strong id="depts">0</strong></div>
+    <div class="card"><span>Year 3 Students</span><strong id="year3">0</strong></div>
+    <div class="card"><span>Recent Records</span><strong id="recent">0</strong></div>
+  </div>
+  <div class="grid2">
+    <div class="panel"><h3>Recent Students</h3><div class="table-wrap"><table>
+      <thead><tr><th>Roll</th><th>Name</th><th>Department</th><th>Year</th></tr></thead>
+      <tbody id="recentBody"></tbody>
+    </table></div></div>
+    <div class="panel"><h3>Quick Actions</h3>
+      <button class="quick" data-go="add">＋ <b>Add Student</b><small>Create a new record</small></button>
+      <button class="quick" data-go="students">⌕ <b>Search Students</b><small>Find by name or roll number</small></button>
+      <button class="quick" data-go="reports">▤ <b>Department Report</b><small>Generate a department list</small></button>
+    </div>
+  </div>
+</section>
+
+<section id="students" class="view">
+  <div class="head"><div><h3>Student Records</h3><p>View, search, edit and delete records.</p></div>
+  <button class="btn primary" data-go="add">+ Add Student</button></div>
+  <div class="panel"><div class="toolbar"><input id="search" placeholder="Search by name or roll number">
+  <select id="filter"><option value="">All departments</option></select></div>
+  <div class="table-wrap"><table><thead><tr><th>Roll</th><th>Name</th><th>Department</th><th>Year</th><th>Email</th><th>Phone</th><th>Actions</th></tr></thead>
+  <tbody id="studentBody"></tbody></table></div></div>
+</section>
+
+<section id="add" class="view">
+  <div class="head"><div><h3 id="formTitle">Add Student</h3><p>Enter basic student details.</p></div></div>
+  <div class="panel form-panel"><form id="studentForm" class="form">
+    <label>Full Name<input id="name" required></label>
+    <label>Roll Number<input id="roll" required></label>
+    <label>Department<input id="dept" required placeholder="e.g. CT"></label>
+    <label>Year<input id="year" type="number" min="1" max="4" required></label>
+    <label>Email<input id="email" type="email" required></label>
+    <label>Phone<input id="phone" required></label>
+    <div class="actions"><button type="button" class="btn secondary" id="cancel">Cancel</button><button class="btn primary" id="save" type="submit">Save Student</button></div>
+  </form></div>
+</section>
+
+<section id="reports" class="view">
+  <div class="head"><div><h3>Department Report</h3><p>Generate a department-wise student list.</p></div><button class="btn secondary" id="print">Print Report</button></div>
+  <div class="panel"><select id="reportDept"><option value="">Select a department</option></select>
+  <div id="summary" class="summary hidden"></div>
+  <div class="table-wrap"><table><thead><tr><th>Roll</th><th>Name</th><th>Year</th><th>Email</th><th>Phone</th></tr></thead>
+  <tbody id="reportBody"><tr><td colspan="5" class="empty">Select a department.</td></tr></tbody></table></div></div>
+</section>
+</main>
+</div>
+<div id="toast" class="toast"></div>
+<script src="script.js"></script>
+</body>
+</html>
