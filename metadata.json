@@ -1,6 +1,6 @@
 {
   "name": "Student Management System",
-  "description": "Staff portal for managing student records, departments, and reports.",
+  "description": "Institutional Student Information System with staff portal, student dashboard, attendance, grades, and department reports.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

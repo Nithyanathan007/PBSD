@@ -1,105 +1,850 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Management System</title>
-<meta name="description" content="Student Management System staff portal for managing student records, departments, and reports.">
-<meta property="og:title" content="Student Management System">
-<meta property="og:description" content="Student Management System staff portal for managing student records, departments, and reports.">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Management System</title>
+  <meta name="description" content="Institutional Student Information System with staff portal, student dashboard, attendance, grades, and department reports.">
+  <meta property="og:title" content="Student Management System">
+  <meta property="og:description" content="Institutional Student Information System with staff portal, student dashboard, attendance, grades, and department reports.">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="login" class="login-screen">
-  <div class="login-card">
-    <div class="logo">SM</div>
-    <h1>Student Management System</h1>
-    <p>Staff Portal</p>
-    <form id="loginForm">
-      <label>Username<input id="username" required></label>
-      <label>Password<input id="password" type="password" required></label>
-      <button class="btn primary" type="submit">Sign In</button>
-      <small>Demo frontend: any non-empty username and password.</small>
-    </form>
-  </div>
-</div>
 
-<div id="app" class="app hidden">
-<aside id="sidebar" class="sidebar">
-  <div class="brand"><div class="logo">SM</div><div><b>Student MS</b><small>Staff Portal</small></div></div>
-  <nav>
-    <button class="nav active" data-view="dashboard">⌂ Dashboard</button>
-    <button class="nav" data-view="students">◫ Students</button>
-    <button class="nav" data-view="add">＋ Add Student</button>
-    <button class="nav" data-view="reports">▤ Department Report</button>
-  </nav>
-  <div class="bottom-nav">
-    <button class="nav" id="theme">◐ Toggle Theme</button>
-    <button class="nav danger" id="logout">↪ Logout</button>
-  </div>
-</aside>
+  <!-- =========================================================
+       LOGIN VIEW (FR-08, NFR-03, prompts.md)
+       ========================================================= -->
+  <div id="loginView" class="login-screen">
+    <div class="login-card" id="loginCard">
+      <div class="login-header">
+        <div class="logo-badge" id="appLogoBadge">SM</div>
+        <h1 id="loginTitle">Student Management System</h1>
+        <p id="loginSubtitle">Secure Institutional Academic Portal</p>
+      </div>
 
-<main class="main">
-<header class="topbar">
-  <button id="menu" class="mobile">☰</button>
-  <div><small>Staff Workspace</small><h2 id="title">Dashboard</h2></div>
-  <span id="user" class="chip">Staff</span>
-</header>
+      <!-- Quick Demo Role Switcher -->
+      <div class="demo-pills" id="demoPills">
+        <button type="button" class="demo-pill-btn active" id="demoStaffBtn">👨‍🏫 Staff Demo</button>
+        <button type="button" class="demo-pill-btn" id="demoStudentBtn">🎓 Student Demo</button>
+      </div>
 
-<section id="dashboard" class="view active-view">
-  <div class="head"><div><h3>Overview</h3><p>Manage student records and common staff tasks.</p></div>
-  <button class="btn primary" data-go="add">+ Add Student</button></div>
-  <div class="stats">
-    <div class="card"><span>Total Students</span><strong id="total">0</strong></div>
-    <div class="card"><span>Departments</span><strong id="depts">0</strong></div>
-    <div class="card"><span>Year 3 Students</span><strong id="year3">0</strong></div>
-    <div class="card"><span>Recent Records</span><strong id="recent">0</strong></div>
-  </div>
-  <div class="grid2">
-    <div class="panel"><h3>Recent Students</h3><div class="table-wrap"><table>
-      <thead><tr><th>Roll</th><th>Name</th><th>Department</th><th>Year</th></tr></thead>
-      <tbody id="recentBody"></tbody>
-    </table></div></div>
-    <div class="panel"><h3>Quick Actions</h3>
-      <button class="quick" data-go="add">＋ <b>Add Student</b><small>Create a new record</small></button>
-      <button class="quick" data-go="students">⌕ <b>Search Students</b><small>Find by name or roll number</small></button>
-      <button class="quick" data-go="reports">▤ <b>Department Report</b><small>Generate a department list</small></button>
+      <form id="loginForm" novalidate>
+        <div class="form-group">
+          <label for="username">Username / Roll Number</label>
+          <div class="input-wrap">
+            <input id="username" type="text" placeholder="e.g. staff or CT2021001" required autocomplete="username" value="staff">
+          </div>
+          <span class="input-error-msg" id="usernameError"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <input id="password" type="password" placeholder="Enter your password" required autocomplete="current-password" value="staff123">
+            <button type="button" class="pw-toggle-btn" id="pwToggleBtn" aria-label="Toggle password visibility">👁️</button>
+          </div>
+          <span class="input-error-msg" id="passwordError"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;" id="loginSubmitBtn">
+          <span>Sign In to Portal</span>
+        </button>
+
+        <div class="login-credentials-box" id="credentialsHint">
+          <strong>Demo Credentials:</strong><br>
+          • Staff: <code>staff</code> / <code>staff123</code> (Admin: <code>admin</code> / <code>admin123</code>)<br>
+          • Student: <code>ct2021001</code> / <code>student123</code>
+        </div>
+      </form>
     </div>
   </div>
-</section>
 
-<section id="students" class="view">
-  <div class="head"><div><h3>Student Records</h3><p>View, search, edit and delete records.</p></div>
-  <button class="btn primary" data-go="add">+ Add Student</button></div>
-  <div class="panel"><div class="toolbar"><input id="search" placeholder="Search by name or roll number">
-  <select id="filter"><option value="">All departments</option></select></div>
-  <div class="table-wrap"><table><thead><tr><th>Roll</th><th>Name</th><th>Department</th><th>Year</th><th>Email</th><th>Phone</th></tr></thead>
-  <tbody id="studentBody"></tbody></table></div></div>
-</section>
+  <!-- =========================================================
+       MAIN APPLICATION LAYOUT
+       ========================================================= -->
+  <div id="appContainer" class="app hidden">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside id="sidebar" class="sidebar">
+      <div class="brand">
+        <div class="brand-icon" id="sidebarBrandIcon">SM</div>
+        <div>
+          <div class="brand-title">Student MS</div>
+          <span class="brand-role-chip" id="userRoleBadge">Staff Portal</span>
+        </div>
+      </div>
 
-<section id="add" class="view">
-  <div class="head"><div><h3 id="formTitle">Add Student</h3><p>Enter basic student details.</p></div></div>
-  <div class="panel form-panel"><form id="studentForm" class="form">
-    <label>Full Name<input id="name" required></label>
-    <label>Roll Number<input id="roll" required></label>
-    <label>Department<input id="dept" required placeholder="e.g. CT"></label>
-    <label>Year<input id="year" type="number" min="1" max="4" required></label>
-    <label>Email<input id="email" type="email" required></label>
-    <label>Phone<input id="phone" required></label>
-    <div class="actions"><button type="button" class="btn secondary" id="cancel">Cancel</button><button class="btn primary" id="save" type="submit">Save Student</button></div>
-  </form></div>
-</section>
+      <nav class="sidebar-nav" id="sidebarNav">
+        <!-- Staff Navigation Items -->
+        <div id="staffNavGroup">
+          <button class="nav-btn active" data-view="dashboard" id="navDashboard">
+            <span>⌂</span> <span>Dashboard</span>
+          </button>
+          <button class="nav-btn" data-view="students" id="navStudents">
+            <span>👥</span> <span>Students Directory</span>
+            <span class="nav-badge" id="sidebarStudentCount">0</span>
+          </button>
+          <button class="nav-btn" data-view="add" id="navAdd">
+            <span>➕</span> <span>Add Student</span>
+          </button>
+          <button class="nav-btn" data-view="reports" id="navReports">
+            <span>📊</span> <span>Department Reports</span>
+          </button>
+          <button class="nav-btn" data-view="academic" id="navAcademic">
+            <span>📝</span> <span>Attendance & Grades</span>
+          </button>
+          <button class="nav-btn" data-view="announcements" id="navAnnouncements">
+            <span>📢</span> <span>Announcements</span>
+          </button>
+        </div>
 
-<section id="reports" class="view">
-  <div class="head"><div><h3>Department Report</h3><p>Generate a department-wise student list.</p></div><button class="btn secondary" id="print">Print Report</button></div>
-  <div class="panel"><select id="reportDept"><option value="">Select a department</option></select>
-  <div id="summary" class="summary hidden"></div>
-  <div class="table-wrap"><table><thead><tr><th>Roll</th><th>Name</th><th>Year</th><th>Email</th><th>Phone</th></tr></thead>
-  <tbody id="reportBody"><tr><td colspan="5" class="empty">Select a department.</td></tr></tbody></table></div></div>
-</section>
-</main>
-</div>
-<div id="toast" class="toast"></div>
-<script src="script.js"></script>
+        <!-- Student Navigation Items (USER 2 in prompts.md) -->
+        <div id="studentNavGroup" class="hidden">
+          <button class="nav-btn active" data-view="studentOverview" id="navStudentOverview">
+            <span>⌂</span> <span>My Overview</span>
+          </button>
+          <button class="nav-btn" data-view="studentSchedule" id="navStudentSchedule">
+            <span>📅</span> <span>Class Timetable</span>
+          </button>
+          <button class="nav-btn" data-view="studentAttendance" id="navStudentAttendance">
+            <span>📊</span> <span>Attendance Logs</span>
+          </button>
+          <button class="nav-btn" data-view="studentGrades" id="navStudentGrades">
+            <span>📝</span> <span>Grades Report Card</span>
+          </button>
+          <button class="nav-btn" data-view="announcements" id="navStudentAnnouncements">
+            <span>📢</span> <span>Notice Board</span>
+          </button>
+        </div>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <button class="nav-btn" id="themeToggleBtn" title="Toggle Light / Dark Mode">
+          <span>◐</span> <span id="themeLabel">Dark Theme</span>
+        </button>
+        <button class="nav-btn danger-btn" id="logoutBtn" title="Sign out of your session">
+          <span>↪</span> <span>Sign Out</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Toggle navigation menu">☰</button>
+          <h2 class="topbar-title" id="pageTitle">Dashboard</h2>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Session Inactivity Indicator (NFR-04) -->
+          <div class="session-badge" id="sessionBadge" title="Session automatically expires after 30 minutes of inactivity">
+            <span class="session-dot" id="sessionDot"></span>
+            <span id="sessionTimerText">Active (30m)</span>
+          </div>
+
+          <div class="user-profile-chip" id="userProfileChip">
+            <div class="avatar-circle" id="userAvatar">ST</div>
+            <div class="user-info">
+              <span class="user-name" id="topbarUserName">Staff Member</span>
+              <span class="user-role" id="topbarUserRole">Staff Access</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- =======================================================
+           VIEW 1: STAFF DASHBOARD
+           ======================================================= -->
+      <section id="dashboard" class="view active-view">
+        <div class="view-header">
+          <div>
+            <h2>Institutional Overview</h2>
+            <p>Real-time metrics, student enrollment, and quick operations.</p>
+          </div>
+          <button class="btn btn-primary" data-go="add" id="dashAddStudentBtn">
+            <span>+ Add Student</span>
+          </button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card" id="cardTotal">
+            <div class="stat-label">
+              <span>Total Students</span>
+              <span class="stat-icon">🎓</span>
+            </div>
+            <div class="stat-val" id="totalCount">0</div>
+            <div class="stat-sub">Enrolled active students</div>
+          </div>
+          <div class="stat-card" id="cardDepts">
+            <div class="stat-label">
+              <span>Departments</span>
+              <span class="stat-icon">🏛️</span>
+            </div>
+            <div class="stat-val" id="deptCount">0</div>
+            <div class="stat-sub">Academic divisions</div>
+          </div>
+          <div class="stat-card" id="cardYear3">
+            <div class="stat-label">
+              <span>Year 3 Students</span>
+              <span class="stat-icon">📚</span>
+            </div>
+            <div class="stat-val" id="year3Count">0</div>
+            <div class="stat-sub">Current junior batch</div>
+          </div>
+          <div class="stat-card" id="cardRecent">
+            <div class="stat-label">
+              <span>Recent Records</span>
+              <span class="stat-icon">⏱️</span>
+            </div>
+            <div class="stat-val" id="recentCount">0</div>
+            <div class="stat-sub">Recently updated</div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid-2">
+          <!-- Recent Students Panel -->
+          <div class="card-panel">
+            <div class="panel-header">
+              <h3 class="panel-title">Recent Students</h3>
+              <button class="btn btn-secondary btn-sm" data-go="students">View All Directory →</button>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table" id="recentTable">
+                <thead>
+                  <tr>
+                    <th>Roll</th>
+                    <th>Name</th>
+                    <th>Dept</th>
+                    <th>Year</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="recentTableBody">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Quick Actions & Department Breakdown -->
+          <div class="card-panel">
+            <div class="panel-header">
+              <h3 class="panel-title">Quick Operations</h3>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px;" data-go="add" id="quickAddBtn">
+                <span>➕</span>
+                <div style="text-align: left; margin-left: 6px;">
+                  <div style="font-weight: 700;">Enroll New Student</div>
+                  <small style="color: var(--muted);">Add roll number, email and department</small>
+                </div>
+              </button>
+              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px;" data-go="students" id="quickSearchBtn">
+                <span>🔍</span>
+                <div style="text-align: left; margin-left: 6px;">
+                  <div style="font-weight: 700;">Search & Filter Records</div>
+                  <small style="color: var(--muted);">Locate by name, roll, or department</small>
+                </div>
+              </button>
+              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px;" data-go="reports" id="quickReportBtn">
+                <span>📊</span>
+                <div style="text-align: left; margin-left: 6px;">
+                  <div style="font-weight: 700;">Generate Department Reports</div>
+                  <small style="color: var(--muted);">View statistics and print rosters</small>
+                </div>
+              </button>
+              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px;" data-go="academic" id="quickAcademicBtn">
+                <span>📝</span>
+                <div style="text-align: left; margin-left: 6px;">
+                  <div style="font-weight: 700;">Mark Attendance & Grades</div>
+                  <small style="color: var(--muted);">Update academic records</small>
+                </div>
+              </button>
+            </div>
+
+            <div style="margin-top: 24px;">
+              <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--text-secondary);">Department Enrollment</h4>
+              <div id="deptDistributionContainer" style="display: flex; flex-direction: column; gap: 8px;">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           VIEW 2: STUDENTS DIRECTORY (FR-03, FR-04, FR-06)
+           ======================================================= -->
+      <section id="students" class="view">
+        <div class="view-header">
+          <div>
+            <h2>Students Directory</h2>
+            <p>Manage, search, filter, edit, and inspect institutional student records.</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-secondary" id="exportCsvBtn" title="Export current list to CSV">
+              <span>📥 Export CSV</span>
+            </button>
+            <button class="btn btn-primary" data-go="add" id="dirAddStudentBtn">
+              <span>+ Add Student</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <div class="table-toolbar">
+            <div class="search-input-wrap">
+              <span class="search-icon">🔍</span>
+              <input id="searchInput" type="text" placeholder="Search by name, roll number, or email (Press '/' to focus)...">
+            </div>
+
+            <div class="filters-group">
+              <span style="font-size: 13px; font-weight: 600; color: var(--muted);">Dept:</span>
+              <div class="dept-chips" id="deptFilterChips">
+                <button class="chip-btn active" data-dept="">All</button>
+              </div>
+
+              <select id="yearFilterSelect" class="input-field" style="width: 120px; padding: 7px 10px;">
+                <option value="">All Years</option>
+                <option value="1">Year 1</option>
+                <option value="2">Year 2</option>
+                <option value="3">Year 3</option>
+                <option value="4">Year 4</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Table with Sorting (FR-03) -->
+          <div class="table-responsive">
+            <table class="data-table" id="studentsTable">
+              <thead>
+                <tr>
+                  <th data-sort="roll" id="thRoll">Roll Number <span>▲</span></th>
+                  <th data-sort="name" id="thName">Student Name <span>↕</span></th>
+                  <th data-sort="dept" id="thDept">Dept <span>↕</span></th>
+                  <th data-sort="year" id="thYear">Year <span>↕</span></th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="studentsTableBody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 13px; color: var(--muted);">
+            <span id="tableRecordCountText">Showing 0 students</span>
+            <span style="font-size: 12px;">Sorted by Roll Number (FR-03 requirement)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           VIEW 3: ADD / EDIT STUDENT (FR-01, FR-02, FR-05, NFR-07)
+           ======================================================= -->
+      <section id="add" class="view">
+        <div class="view-header">
+          <div>
+            <h2 id="studentFormTitle">Add New Student</h2>
+            <p id="studentFormSub">Register a new student into the university database.</p>
+          </div>
+        </div>
+
+        <div class="card-panel form-panel-container">
+          <form id="studentDataForm" novalidate>
+            <input type="hidden" id="editingStudentId" value="">
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="formName">Full Name <span style="color: var(--danger);">*</span></label>
+                <input id="formName" class="input-field" type="text" placeholder="e.g. Priya Sharma" required>
+                <span class="input-error-msg" id="err-name"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="formRoll">
+                  Roll Number <span style="color: var(--danger);">*</span>
+                  <span id="lockedRollBadge" class="locked-badge hidden">🔒 Fixed (FR-05)</span>
+                </label>
+                <div class="locked-input-wrapper">
+                  <input id="formRoll" class="input-field" type="text" placeholder="e.g. CT2021001" required>
+                </div>
+                <span class="input-error-msg" id="err-roll"></span>
+                <small id="rollHelperText" style="color: var(--muted); font-size: 12px; display: block; margin-top: 2px;">
+                  Must be unique across the university database (FR-02).
+                </small>
+              </div>
+
+              <div class="form-group">
+                <label for="formDept">Department Code <span style="color: var(--danger);">*</span></label>
+                <input id="formDept" class="input-field" type="text" placeholder="e.g. CT, CS, EC, ME, IT" required style="text-transform: uppercase;">
+                <span class="input-error-msg" id="err-dept"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="formYear">Academic Year (1 - 4) <span style="color: var(--danger);">*</span></label>
+                <select id="formYear" class="input-field" required>
+                  <option value="">Select Year</option>
+                  <option value="1">1st Year (Freshman)</option>
+                  <option value="2">2nd Year (Sophomore)</option>
+                  <option value="3">3rd Year (Junior)</option>
+                  <option value="4">4th Year (Senior)</option>
+                </select>
+                <span class="input-error-msg" id="err-year"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="formEmail">Email Address <span style="color: var(--danger);">*</span></label>
+                <input id="formEmail" class="input-field" type="email" placeholder="student@example.edu" required>
+                <span class="input-error-msg" id="err-email"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="formPhone">Phone Number <span style="color: var(--danger);">*</span></label>
+                <input id="formPhone" class="input-field" type="tel" placeholder="e.g. 9876543210" required>
+                <span class="input-error-msg" id="err-phone"></span>
+              </div>
+            </div>
+
+            <!-- Live Preview Card -->
+            <div style="margin-top: 18px; padding: 16px; border: 1px dashed var(--line); border-radius: var(--radius-sm); background: var(--surface2);">
+              <div style="font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">
+                Live Student Card Preview
+              </div>
+              <div style="display: flex; align-items: center; gap: 14px;">
+                <div class="avatar-circle" id="previewAvatar" style="width: 44px; height: 44px; font-size: 16px;">ST</div>
+                <div>
+                  <div id="previewName" style="font-weight: 700; font-size: 16px;">Student Name</div>
+                  <div style="display: flex; gap: 8px; margin-top: 4px; align-items: center;">
+                    <span id="previewRoll" class="roll-badge">ROLL123</span>
+                    <span id="previewDept" class="dept-badge">DEPT</span>
+                    <span id="previewYear" class="year-pill">Year -</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions-bar">
+              <button type="button" class="btn btn-secondary" id="formCancelBtn">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="formSubmitBtn">Save Student Record</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           VIEW 4: DEPARTMENT REPORTS (FR-07)
+           ======================================================= -->
+      <section id="reports" class="view">
+        <!-- Dedicated Printable Academic Header (Visible on print) -->
+        <div class="print-header-block">
+          <h2>NATIONAL INSTITUTE OF TECHNOLOGY</h2>
+          <h3>OFFICIAL DEPARTMENT STUDENT ROSTER REPORT</h3>
+          <p>Generated on <span id="printReportDate"></span> | System Verification ID: SIS-2026</p>
+        </div>
+
+        <div class="view-header">
+          <div>
+            <h2>Department Report</h2>
+            <p>Generate academic student rosters, demographic statistics, and print-ready reports (FR-07).</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-secondary" id="exportReportCsvBtn">📥 Export CSV</button>
+            <button class="btn btn-primary" id="printReportBtn">🖨️ Print Report</button>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 18px;">
+            <label for="reportDeptSelect" style="font-weight: 700; font-size: 14px;">Select Department:</label>
+            <select id="reportDeptSelect" class="input-field" style="max-width: 240px;">
+              <option value="">-- Choose Department --</option>
+            </select>
+          </div>
+
+          <!-- Report Statistics Summary (FR-07) -->
+          <div id="reportSummarySection" class="report-summary-bar hidden">
+            <div class="report-metric-box">
+              <span>Department</span>
+              <strong id="repDeptName">-</strong>
+            </div>
+            <div class="report-metric-box">
+              <span>Total Students</span>
+              <strong id="repTotalCount">0</strong>
+            </div>
+            <div class="report-metric-box">
+              <span>Batch Distribution</span>
+              <div id="repYearPills" style="margin-top: 6px; font-size: 12px; color: var(--muted);"></div>
+            </div>
+            <div class="report-metric-box">
+              <span>Report Status</span>
+              <strong style="color: var(--success); font-size: 16px; margin-top: 8px;">Active Roster</strong>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table" id="reportTable">
+              <thead>
+                <tr>
+                  <th>Roll Number</th>
+                  <th>Student Name</th>
+                  <th>Year</th>
+                  <th>Email</th>
+                  <th>Phone Number</th>
+                </tr>
+              </thead>
+              <tbody id="reportTableBody">
+                <tr>
+                  <td colspan="5" style="text-align: center; color: var(--muted); padding: 32px;">
+                    Please select a department from the dropdown above to generate the roster.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Dedicated Printable Signature Block (Visible on print) -->
+          <div class="print-signature-block">
+            <div>
+              <p>_____________________________</p>
+              <p><b>Head of Department</b></p>
+            </div>
+            <div>
+              <p>_____________________________</p>
+              <p><b>Registrar / Dean of Academics</b></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           VIEW 5: ATTENDANCE & GRADING (Staff)
+           ======================================================= -->
+      <section id="academic" class="view">
+        <div class="view-header">
+          <div>
+            <h2>Attendance & Academic Grades</h2>
+            <p>Record daily class attendance and publish semester examination grades.</p>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--line); padding-bottom: 12px;">
+            <button class="btn btn-secondary active" id="tabAttendanceBtn">📅 Mark Attendance</button>
+            <button class="btn btn-secondary" id="tabGradesBtn">📝 Enter Grades</button>
+          </div>
+
+          <!-- Attendance Form -->
+          <div id="attendanceTabContent">
+            <form id="attendanceForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; align-items: end;">
+              <div class="form-group" style="margin: 0;">
+                <label for="attStudentSelect">Student</label>
+                <select id="attStudentSelect" class="input-field" required>
+                  <option value="">Select Student...</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label for="attDate">Date</label>
+                <input id="attDate" type="date" class="input-field" required>
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label for="attSubject">Subject</label>
+                <input id="attSubject" type="text" class="input-field" placeholder="e.g. Database Systems" required>
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label for="attStatus">Status</label>
+                <select id="attStatus" class="input-field">
+                  <option value="Present">Present ✅</option>
+                  <option value="Absent">Absent ❌</option>
+                  <option value="Late">Late ⚠️</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary" style="height: 42px;">Save Attendance</button>
+            </form>
+          </div>
+
+          <!-- Grades Form -->
+          <div id="gradesTabContent" class="hidden">
+            <form id="gradeForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; align-items: end;">
+              <div class="form-group" style="margin: 0;">
+                <label for="gradeStudentSelect">Student</label>
+                <select id="gradeStudentSelect" class="input-field" required>
+                  <option value="">Select Student...</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label for="gradeSubject">Subject</label>
+                <input id="gradeSubject" type="text" class="input-field" placeholder="e.g. Data Structures" required>
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label for="gradeSemester">Semester</label>
+                <input id="gradeSemester" type="text" class="input-field" placeholder="e.g. Sem 5" value="Sem 5" required>
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label for="gradeMarks">Marks (0-100)</label>
+                <input id="gradeMarks" type="number" min="0" max="100" class="input-field" placeholder="85" required>
+              </div>
+              <button type="submit" class="btn btn-primary" style="height: 42px;">Record Grade</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           VIEW 6: CAMPUS ANNOUNCEMENTS (Staff & Student)
+           ======================================================= -->
+      <section id="announcements" class="view">
+        <div class="view-header">
+          <div>
+            <h2>Campus Notice Board</h2>
+            <p>Institutional circulars, exam notices, and event announcements.</p>
+          </div>
+          <button class="btn btn-primary" id="openAddAnnouncementBtn">
+            <span>+ Post Notice</span>
+          </button>
+        </div>
+
+        <div id="announcementsList" style="display: flex; flex-direction: column; gap: 14px;">
+          <!-- Loaded dynamically -->
+        </div>
+      </section>
+
+      <!-- =======================================================
+           VIEW 7: STUDENT PORTAL OVERVIEW (prompts.md USER 2)
+           ======================================================= -->
+      <section id="studentOverview" class="view">
+        <div class="student-hero-banner">
+          <div>
+            <h2 class="student-hero-title" id="stHeroName">Welcome, Student</h2>
+            <div class="student-hero-sub" id="stHeroSubtitle">Academic Status: Active Enrollment</div>
+            <div class="student-pills">
+              <span class="student-hero-pill" id="stHeroRoll">Roll: -</span>
+              <span class="student-hero-pill" id="stHeroDept">Dept: -</span>
+              <span class="student-hero-pill" id="stHeroYear">Year: -</span>
+            </div>
+          </div>
+          <div class="attendance-circle-wrap">
+            <div class="attendance-big-pct" id="stHeroAttRate">100%</div>
+            <div style="font-size: 12px; font-weight: 600;">Attendance Rate</div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label"><span>Academic Standing</span><span>🏆</span></div>
+            <div class="stat-val" style="font-size: 24px; color: var(--success);" id="stStanding">Good Standing</div>
+            <div class="stat-sub">Minimum 75% attendance met</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label"><span>Total Present</span><span>✅</span></div>
+            <div class="stat-val" id="stPresentCount">0</div>
+            <div class="stat-sub">Recorded lecture attendances</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label"><span>Semester</span><span>📅</span></div>
+            <div class="stat-val" style="font-size: 24px;">Semester 5</div>
+            <div class="stat-sub">Academic Year 2026-2027</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label"><span>Subjects Registered</span><span>📚</span></div>
+            <div class="stat-val" id="stCourseCount">5</div>
+            <div class="stat-sub">Core & Electives</div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid-2">
+          <div class="card-panel">
+            <div class="panel-header">
+              <h3 class="panel-title">Today's Scheduled Classes</h3>
+              <button class="btn btn-secondary btn-sm" data-go="studentSchedule">Full Timetable →</button>
+            </div>
+            <div id="stTodaySchedulePreview">
+              <!-- Loaded via JS -->
+            </div>
+          </div>
+
+          <div class="card-panel">
+            <div class="panel-header">
+              <h3 class="panel-title">Quick Student Actions</h3>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px;" data-go="studentGrades">
+                <span>📝</span>
+                <div style="text-align: left; margin-left: 8px;">
+                  <div style="font-weight: 700;">View Grade Report Card</div>
+                  <small style="color: var(--muted);">Subject-wise marks and grades</small>
+                </div>
+              </button>
+              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px;" data-go="studentAttendance">
+                <span>📊</span>
+                <div style="text-align: left; margin-left: 8px;">
+                  <div style="font-weight: 700;">Detailed Attendance Log</div>
+                  <small style="color: var(--muted);">Day-by-day attendance history</small>
+                </div>
+              </button>
+              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px;" data-go="announcements">
+                <span>📢</span>
+                <div style="text-align: left; margin-left: 8px;">
+                  <div style="font-weight: 700;">Campus Notices</div>
+                  <small style="color: var(--muted);">Exam schedules and announcements</small>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           VIEW 8: STUDENT SCHEDULE (USER 2 in prompts.md)
+           ======================================================= -->
+      <section id="studentSchedule" class="view">
+        <div class="view-header">
+          <div>
+            <h2>Weekly Class Timetable</h2>
+            <p>Lecture schedule, laboratory sessions, and classroom allocations.</p>
+          </div>
+        </div>
+        <div class="card-panel">
+          <div id="studentScheduleList">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           VIEW 9: STUDENT ATTENDANCE (USER 2 in prompts.md)
+           ======================================================= -->
+      <section id="studentAttendance" class="view">
+        <div class="view-header">
+          <div>
+            <h2>Attendance History</h2>
+            <p>Official record of lecture presence and academic attendance percentage.</p>
+          </div>
+        </div>
+        <div class="card-panel">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Subject</th>
+                  <th>Status</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody id="studentAttendanceBody">
+                <!-- Loaded via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           VIEW 10: STUDENT GRADES (USER 2 in prompts.md)
+           ======================================================= -->
+      <section id="studentGrades" class="view">
+        <div class="view-header">
+          <div>
+            <h2>Semester Grades & Performance</h2>
+            <p>Official examination marks and letter grade transcript.</p>
+          </div>
+        </div>
+        <div class="card-panel">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Semester</th>
+                  <th>Marks Scored</th>
+                  <th>Maximum</th>
+                  <th>Grade</th>
+                  <th>Performance</th>
+                </tr>
+              </thead>
+              <tbody id="studentGradesBody">
+                <!-- Loaded via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- =========================================================
+       MODALS & DIALOGS
+       ========================================================= -->
+  <!-- Student Profile Inspection Modal -->
+  <div class="modal-overlay" id="profileModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Student Profile Dossier</h3>
+        <button class="modal-close-btn" id="closeProfileModalBtn">&times;</button>
+      </div>
+      <div id="profileModalBody">
+        <!-- Filled dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal-box" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--danger);">Confirm Deletion</h3>
+        <button class="modal-close-btn" id="closeDeleteModalBtn">&times;</button>
+      </div>
+      <p style="margin-bottom: 16px; color: var(--text-secondary);" id="deleteModalText">
+        Are you sure you want to permanently delete this student record? This action cannot be undone.
+      </p>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+        <button class="btn btn-danger" id="confirmDeleteBtn">Delete Record</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Post Announcement Modal -->
+  <div class="modal-overlay" id="announcementModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Post Campus Announcement</h3>
+        <button class="modal-close-btn" id="closeAnnouncementModalBtn">&times;</button>
+      </div>
+      <form id="announcementForm">
+        <div class="form-group">
+          <label for="annTitle">Title</label>
+          <input id="annTitle" class="input-field" placeholder="e.g. Mid-term Exam Schedule" required>
+        </div>
+        <div class="form-group">
+          <label for="annCategory">Category</label>
+          <select id="annCategory" class="input-field">
+            <option value="General">General Notice</option>
+            <option value="Exams">Exams & Schedules</option>
+            <option value="Events">Events & Fest</option>
+            <option value="Library">Library & Facilities</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="annContent">Notice Content</label>
+          <textarea id="annContent" class="input-field" rows="4" placeholder="Enter the circular description..." required></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <button type="button" class="btn btn-secondary" id="cancelAnnBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Publish Announcement</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Interactive Toasts Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Main Client Application Script -->
+  <script src="script.js"></script>
 </body>
 </html>
