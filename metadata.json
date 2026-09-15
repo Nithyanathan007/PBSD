@@ -1,0 +1,8 @@
+{
+  "name": "Student Management System",
+  "description": "Staff portal for managing student records, departments, and reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

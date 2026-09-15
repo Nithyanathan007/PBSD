@@ -1,0 +1,15 @@
+{
+  "name": "pbsd-student-management-system",
+  "version": "1.0.0",
+  "description": "Student Management System staff portal",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "echo 'Build complete'",
+    "lint": "echo 'Lint complete'"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
